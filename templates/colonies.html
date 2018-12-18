@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  {{ block.super }}
+{% endblock %}
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item"><a href="{% url 'home' %}">Yards</a></li>
+  <li class="breadcrumb-item active">{{ yard.name }}</li>
+{% endblock %}
+
+{% block content %}
+ <div class="mb-4">
+    <a href="{% url 'new_colony' yard.pk %}" class="btn btn-primary">New Colony</a>
+  </div>
+
+    <table class="table">
+    <thead class="thead-inverse">
+      <tr>
+        <th>Location</th>
+        <th>Colony Type</th>
+        <th>Started</th>
+        <th>Ended</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      {% for colony in colonies %}
+        <tr>
+          <td>
+             <a href="{% url 'queens' colony.pk %}">{{ colony.location }}</a>
+          </td>
+          <td class="align-middle">{{ colony.colony_type }}</td>
+          <td class="align-middle">{{ colony.start_at|date:"D, d M, Y" }}</td>
+          <td class="align-middle">{{ colony.end_at|date:"D, d M, Y" }}</td>
+          <td class="align-middle">  <a href="{% url 'edit_colony' colony.pk %}"
+            class="btn btn-primary btn-sm"
+            role="button">Edit</a>
+          </td>
+          <td class="align-middle">  <a href="{% url 'colony_logs' colony.pk %}"
+            class="btn btn-primary btn-sm"
+            role="button">Log</a>
+          </td>
+        </tr>
+      {% endfor %}
+
+    </tbody>
+  </table>
+{% endblock %}

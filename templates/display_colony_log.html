@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %} {{ block.super }}{% endblock %}
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item"><a href="{% url 'home' %}">Yards</a></li>
+  <li class="breadcrumb-item">{{ yard.name }} </li>
+  <li class="breadcrumb-item"><a href="{% url 'colonies' colony.yard.pk %}">Colonies</a></li>
+  <li class="breadcrumb-item active">{{ colony.location }} </li>
+  <li class="breadcrumb-item"><a href="{% url 'colony_logs' colony.pk %}">Colony logs</a></li>
+  <li class="breadcrumb-item active">Display Colony Log</li>
+{% endblock %}
+
+{% block content %}
+
+    {% include 'includes/form.html' %}
+
+{% endblock %}

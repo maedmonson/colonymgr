@@ -1,0 +1,32 @@
+<div class="mb-4">
+    <a href="{% url 'new_queen_log' %}" class="btn btn-primary">Queen Logs</a>
+  </div>
+
+    <table class="table">
+    <thead class="thead-inverse">
+      <tr>
+        <th>Log Date</th>
+        <th>Subject</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      {% for queen_log in queen_logs %}
+        <tr>
+          <td>
+             <a href="{% url 'queen_log' queen_log.pk %}">{{ queen_log.created_at }}</a>
+          </td>
+          <td>
+
+                {{ queen_log.subject }}
+          </td>
+          <td class="align-middle">  <a href="{% url 'edit_queen_log' queen_log.pk %}"
+            class="btn btn-primary btn-sm"
+            role="button">Edit</a>
+          </td>
+        </tr>
+      {% endfor %}
+
+    </tbody>
+  </table>
+{% endblock %}

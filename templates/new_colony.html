@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Start a New Colony{% endblock %}
+
+{% block breadcrumb %}
+   <li class="breadcrumb-item"><a href="{% url 'home' %}">Yards</a></li>
+  <li class="breadcrumb-item">{{ yard.name }} </li>
+  <li class="breadcrumb-item"><a href="{% url 'colonies' yard.pk %}">Colonies</a></li>
+  <li class="breadcrumb-item active">New Colony</li>
+{% endblock %}
+
+{% block content %}
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% include 'includes/form.html' %}
+    <button type="submit" class="btn btn-success">Post</button>
+  </form>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}
+ {{ block.super }}
+{% endblock %}
+
+{% block breadcrumb %}
+
+  <li class="breadcrumb-item"><a href="{% url 'home' %}">Yards</a></li>
+  <li class="breadcrumb-item">{{ yard.name }} </li>
+  <li class="breadcrumb-item"><a href="{% url 'colonies' colony.yard.pk %}">Colonies</a></li>
+  <li class="breadcrumb-item active">{{ colony.location }} </li>
+
+{% endblock %}
+
+{% block content %}
+
+    <div class="mb-4">
+        <a href="{% url 'new_colony_log' colony.pk %}" class="btn btn-primary">New Colony Log</a>
+    </div>
+
+    <table class="table">
+    <thead class="thead-inverse">
+      <tr>
+        <th>Log Date</th>
+        <th>Subject</th>
+        <th>Descriptiont</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      {% for colony_log in colony_logs %}
+        <tr>
+          <td>
+             <a href="{% url 'display_colony_log' colony_log.pk %}">{{ colony_log.created_at|date:"D, d M, Y" }}</a>
+          </td>
+          <td>
+
+                {{ colony_log.subject }}
+          </td>
+          <td>
+
+                {{ colony_log.description }}
+          </td>
+
+        </tr>
+      {% endfor %}
+
+    </tbody>
+  </table>
+{% endblock %}

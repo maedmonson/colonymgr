@@ -1,0 +1,38 @@
+{{% extends 'base.html' %}
+
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item active">Yard List</li>
+{% endblock %}
+
+{% block content %}
+    <div class="mb-4">
+        <a href="{% url 'new_yard' %}" class="btn btn-primary">New Yard</a>
+    </div>
+
+  <table class="table">
+    <thead class="thead-inverse">
+      <tr>
+        <th>Yard</th>
+        <th>Colonies</th>
+        <th>Queens</th>
+     </tr>
+    </thead>
+    <tbody>
+      {% for yard in yards %}
+        <tr>
+          <td>
+            <a href="{% url 'colonies' yard.pk %}">{{ yard.name }}</a>
+            <small class="text-muted d-block">{{ yard.description }}</small>
+          </td>
+          <td class="align-middle">0</td>
+          <td class="align-middle">0</td>
+          <td class="align-middle">  <a href="{% url 'edit_yard' yard.pk %}"
+            class="btn btn-primary btn-sm"
+            role="button">Edit</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

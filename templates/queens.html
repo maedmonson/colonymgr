@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  {{ colony.location }} - {{ block.super }}
+{% endblock %}
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item"><a href="{% url 'home' %}">Yards</a></li>
+  <li class="breadcrumb-item">{{ yard.name }} </li>
+  <li class="breadcrumb-item"><a href="{% url 'colonies' colony.yard.pk %}">Colonies</a></li>
+  <li class="breadcrumb-item active">{{ colony.location }} </li>
+
+{% endblock %}
+
+{% block content %}
+ <div class="mb-4">
+    <a href="{% url 'new_queen' colony.pk %}" class="btn btn-primary">New Queen</a>
+  </div>
+
+    <table class="table">
+    <thead class="thead-inverse">
+      <tr>
+        <th>Queen No.</th>
+        <th>Color</th>
+        <th>Birth Date</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      {% for queen in queens %}
+        <tr>
+          <td>
+             <a href="{% url 'queen_logs' queen.pk %}">{{ queen.queen_no }}</a>
+          </td>
+          <td>
+
+                {{ queen.queen_color }}
+          </td>
+          <td>
+
+                {{ queen.birth_at|date:"D, d M, Y"}}
+          </td>
+
+
+          <td class="align-middle">  <a href="{% url 'edit_queen' queen.pk %}"
+            class="btn btn-primary btn-sm"
+            role="button">Edit</a>
+          </td>
+        </tr>
+      {% endfor %}
+
+    </tbody>
+  </table>
+{% endblock %}
