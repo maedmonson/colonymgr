@@ -20,6 +20,35 @@ class NewYardForm(forms.ModelForm):
 class DateInput(forms.DateInput):
     input_type = 'date'
 
+
+class NewColonyForm(forms.ModelForm):
+
+    class Meta:
+        model = Colony
+        fields = ['yard','colony_type','location','start_at','end_at']
+
+        widgets = {
+            'start_at': DateInput(),
+            'end_at': DateInput(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.yard = kwargs.pop('yard', None)
+
+        super(NewColonyForm, self).__init__(*args, **kwargs)
+
+        self.fields['yard'].empty_label = None
+        self.fields['yard'].initial =  self.yard
+
+
+    colony_type = forms.CharField(label='Colony Type?', widget=forms.Select(choices=COLONY_TYPES))
+
+
+
+
+
+
+
 class ColonyForm(forms.ModelForm):
 
     class Meta:
@@ -58,14 +87,11 @@ class Colony_logForm(forms.ModelForm):
     class Meta:
         model = Colony_log
         fields = ['colony','subject','description','visited_at']
+        widgets = {'colony': forms.HiddenInput(),
+                   'visited_at': DateInput()
 
+                    }
 
-
-        widgets = {
-            'visited_at': DateInput(),
-            'colony': forms.Select(attrs={'readonly':'readonly'}),
-
-        }
 
 class Display_Colony_logForm(forms.ModelForm):
 
@@ -74,8 +100,8 @@ class Display_Colony_logForm(forms.ModelForm):
         fields = ['colony','subject','description','visited_at']
 
         widgets = {
+            'colony': forms.HiddenInput(),
             'visited_at': DateInput(),
-            'colony': forms.Select(attrs={'readonly':'readonly'}),
             'subject': forms.TextInput(attrs={'readonly':'readonly'}),
             'description': forms.Textarea(attrs={'readonly':'readonly'}),
             'visited_at': forms.TextInput(attrs={'readonly':'readonly'}),

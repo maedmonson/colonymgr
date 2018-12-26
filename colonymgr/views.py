@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import NewYardForm
+from .forms import NewColonyForm
 from .forms import ColonyForm
 from .forms import NewQueenForm
 from .forms import EditQueenForm
@@ -78,23 +79,30 @@ def new_colony(request, yard_pk):
 
 
     if request.method == 'POST':
-        form = ColonyForm(request.POST)
+        form = NewColonyForm(request.POST)
 
         if form.is_valid():
+
+            yard = form.cleaned_data.get('yard')
+
             colony = form.save(commit=False)
             colony.created_by = request.user
             colony.save()
 
-            return redirect('home')
+            return redirect('colonies', home_pk=yard.pk)
 
 
     else:
-        form = ColonyForm(yard_pk = yard_pk)
+        form = NewColonyForm(yard = yard)
 
-    return render(request, 'new_colony.html',{'form' : form, 'yard': yard })
+    return render(request, 'new_colony.html',{'form' : form, 'yard': yard})
 
 def new_colony_log(request, pk):
     user = request.user
+
+    colony = Colony.objects.get(pk=pk)
+    yard = Yard.objects.get(pk=colony.yard.pk)
+
     if request.method == 'POST':
         form = Colony_logForm(request.POST)
         if form.is_valid():
@@ -108,8 +116,7 @@ def new_colony_log(request, pk):
 
 
     else:
-        colony = Colony.objects.get(pk = pk)
-        yard = Yard.objects.get(pk=colony.yard.pk)
+
         form = Colony_logForm(initial={'colony': colony})
 
 
@@ -170,9 +177,12 @@ class ColonyUpdateView(UpdateView):
 
 
     def form_valid(self, form):
+
+        yard = form.cleaned_data.get('yard')
+
         post = form.save(commit=False)
         post.save()
-        return redirect('colonies', home_pk= 2)
+        return redirect('colonies', home_pk = yard.pk)
 
 class QueenUpdateView(UpdateView):
     model = Queen
