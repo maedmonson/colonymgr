@@ -11,10 +11,29 @@
 {% endblock %}
 
 {% block content %}
-  <form method="post" class="mb-4" novalidate>
+  <form method="post" class="mb-4"  id="EditQueenForm" data-colonies-url="{% url 'ajax_load_colonies' %}" novalidate>
     {% csrf_token %}
     {% include 'includes/form.html' %}
     <button type="submit" class="btn btn-success">Save changes</button>
     <a href="{% url 'home' %}" class="btn btn-outline-secondary" role="button">Cancel</a>
   </form>
+
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script>
+      $("#id_yard").change(function () {
+        var url = $("#EditQueenForm").attr("data-colonies-url");  // get the url of the `load_colonies` view
+        var yardId = $(this).val();  // get the selected yard ID from the HTML input
+
+        $.ajax({                       // initialize an AJAX request
+          url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+          data: {
+            'pk': yardId       // add the country id to the GET parameters
+          },
+          success: function (data) {   // `data` is the return of the `load_colonies` view function
+          $("#id_colony").html(data);  // replace the contents of the colony input with the data that came from the server
+          }
+        });
+      });
+  </script>
+
 {% endblock %}

@@ -13,7 +13,7 @@ class Yard(models.Model):
 class Colony(models.Model):
     created_by = models.ForeignKey(User, related_name='colonies', on_delete=models.PROTECT)
     yard = models.ForeignKey(Yard, related_name='colonys',on_delete=models.PROTECT)
-    location = models.CharField(max_length=10, unique=True)
+    location = models.CharField(max_length=10)
     colony_type = models.CharField(max_length=25)
     start_at = models.DateTimeField(null=True ,blank=True)
     end_at = models.DateTimeField(null=True, blank=True)
@@ -21,15 +21,18 @@ class Colony(models.Model):
     def __str__(self):
         return self.location
 
+    class Meta:
+        unique_together = ('yard','location')
+
 class Queen(models.Model):
     created_by = models.ForeignKey(User, related_name='queens', on_delete=models.PROTECT)
     yard = models.ForeignKey(Yard, related_name='queens', default=None, on_delete=models.PROTECT)
     colony = models.ForeignKey(Colony, related_name='queens',on_delete=models.PROTECT)
     queen_no = models.CharField(max_length=10, unique=True)
     queen_color = models.CharField(max_length=10)
-    cell_install_at = models.DateTimeField(null=True)
-    birth_at = models.DateTimeField(null=True)
-    laying_at = models.DateTimeField(null=True)
+    cell_install_at = models.DateTimeField(null=True ,blank=True)
+    birth_at = models.DateTimeField(null=True ,blank=True)
+    laying_at = models.DateTimeField(null=True ,blank=True)
 
     def __str__(self):
         return self.queen_color + ' ' + self.queen_no

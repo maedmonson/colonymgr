@@ -33,8 +33,8 @@ def colonies(request, home_pk):
     return render(request, 'colonies.html', {'yard':yard, 'colonies': colonies})
 
 def queens(request, pk):
-    colony =  get_object_or_404(Colony,pk=pk)
-    yard = get_object_or_404(Yard, pk = colony.yard.pk)
+    colony =  Colony.objects.get(pk=pk)
+    yard =  Yard.objects.get(pk = colony.yard.pk)
     queens =  Queen.objects.filter(colony = colony)
     return render(request, 'queens.html', {'yard': yard, 'colony': colony, 'queens': queens})
 
@@ -125,23 +125,31 @@ def new_colony_log(request, pk):
 
 def new_queen(request, colony_pk):
 
+    colony = Colony.objects.get(pk=colony_pk)
+    yard = Yard.objects.get(pk=colony.yard.pk)
+
     if request.method == 'POST':
         form = NewQueenForm(request.POST)
 
-        print(form.is_valid())
 
         if form.is_valid():
             queen = form.save(commit=False)
             queen.created_by = request.user
             queen.save()
 
-            return redirect('colonies', colony_pk)
+            return redirect('queens', colony_pk)
+        else:
+            print(form.errors)
     else:
-        colony = Colony.objects.get(pk = colony_pk)
-        yard = Yard.objects.get(pk = colony.yard.pk)
-        form = NewQueenForm()
+        form = NewQueenForm(initial={'colony': colony, 'yard' : yard})
 
     return render(request, 'new_queen.html',{'form' : form, 'yard': yard, 'colony': colony })
+
+
+def load_colonies(request):
+    pk = request.GET.get('pk')
+    colonies = Colony.objects.filter(pk = pk)
+    return render(request, 'queen/colony_dropdown_list_options.html', {'colonies': colonies})
 
 
 
@@ -184,6 +192,34 @@ class ColonyUpdateView(UpdateView):
         post.save()
         return redirect('colonies', home_pk = yard.pk)
 
+class Colony_logUpdateView(UpdateView):
+    model = Colony_log
+    form_class = Colony_logForm
+    template_name = 'edit_colony_log.html'
+    pk_url_kwarg = 'colony_log_pk'
+    context_object_name = 'colony_log'
+
+    def get_context_data(self, **kwargs):
+        colony_log_pk = self.kwargs['colony_log_pk']
+
+        colony_log = Colony_log.objects.get(pk = colony_log_pk)
+        colony = Colony.objects.get(pk = colony_log.colony.pk)
+        yard = Yard.objects.get(pk = colony.yard.pk)
+        context = super(Colony_logUpdateView, self).get_context_data(**kwargs)
+        context['yard'] = yard
+        context['colony'] = colony
+        return context
+
+
+    def form_valid(self, form):
+
+        colony = form.cleaned_data.get('colony')
+
+        post = form.save(commit=False)
+        post.save()
+        return redirect('colony_logs', pk = colony.pk)
+
+
 class QueenUpdateView(UpdateView):
     model = Queen
     form_class = EditQueenForm
@@ -202,9 +238,46 @@ class QueenUpdateView(UpdateView):
 
 
     def form_valid(self, form):
+
+        colony = form.cleaned_data.get('colony')
+
         post = form.save(commit=False)
         post.save()
-        return redirect('home')
+        return redirect('queens', pk=colony.pk)
+
+    def get_form_kwargs(self):
+        kwargs = super(QueenUpdateView, self).get_form_kwargs()
+        kwargs['queen_pk'] = self.kwargs['queen_pk']
+        return kwargs
+
+class Queen_UpdateYard(UpdateView):
+    model = Queen
+    form_class = EditQueenForm
+    template_name = 'edit_queen.html'
+    pk_url_kwarg = 'queen_pk'
+    context_object_name = 'queen'
+
+    def get_context_data(self, **kwargs):
+        context = super(QueenUpdateView, self).get_context_data(**kwargs)
+
+        queen = Queen.objects.get(pk=self.kwargs['queen_pk'])
+
+        context['yard'] = queen.colony.yard
+        context['colony'] = queen.colony
+        return context
+
+    def form_valid(self, form):
+        colony = form.cleaned_data.get('colony')
+
+        post = form.save(commit=False)
+        post.save()
+        return redirect('queens', pk=colony.pk)
+
+    def get_form_kwargs(self):
+        kwargs = super(QueenUpdateView, self).get_form_kwargs()
+        kwargs['queen_pk'] = self.kwargs['queen_pk']
+        return kwargs
+
 
 class Queen_logUpdateView(UpdateView):
     model = Queen_log

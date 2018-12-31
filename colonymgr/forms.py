@@ -87,7 +87,7 @@ class Colony_logForm(forms.ModelForm):
     class Meta:
         model = Colony_log
         fields = ['colony','subject','description','visited_at']
-        widgets = {'colony': forms.HiddenInput(),
+        widgets = {
                    'visited_at': DateInput()
 
                     }
@@ -116,13 +116,12 @@ class NewQueenForm(forms.ModelForm):
        model = Queen
        fields = ['yard', 'colony', 'queen_no', 'queen_color', 'cell_install_at','birth_at','laying_at']
 
-       localized_fields = ('cell_install_at','birth_at','laying_at')
-
        widgets = {
-           'cell_install_at': DateInput(),
+           'yard': forms.HiddenInput(),
+           'colony': forms.HiddenInput(),
+           'cell_install_at':DateInput(),
            'birth_at': DateInput(),
            'laying_at': DateInput()
-
        }
 
 
@@ -130,16 +129,41 @@ class NewQueenForm(forms.ModelForm):
 
 class EditQueenForm(forms.ModelForm):
 
+    def __init__(self, *args, **kwargs):
+
+        queen_pk = kwargs.pop('queen_pk')
+
+        super(EditQueenForm, self).__init__(*args, **kwargs)
+        queen = Queen.objects.get(pk=queen_pk)
+
+        self.fields['queen_no'].label = 'Queen Tag No:'
+        self.fields['queen_color'].label = 'Queen Tag Color:'
+
+        self.fields['yard'].empty_label = None
+
+        self.fields['colony'].empty_label = None
+        self.fields['colony'].queryset = Colony.objects.filter(yard=queen.yard)
+
+        if 'yard' in self.data:
+            try:
+                yard_id = int(self.data.get('yard'))
+                self.fields['colony'].queryset = Colony.objects.filter(yard_id=yard_id)
+            except (ValueError, TypeError):
+                pass  # invalid input from the client; ignore and fallback to empty City queryset
+        elif self.instance.pk:
+            self.fields['colony'].queryset = Colony.objects.filter(yard_id = self.instance.yard.pk)
+
     class Meta:
-       model = Queen
-       fields = ['yard', 'colony', 'queen_no', 'queen_color', 'cell_install_at','birth_at','laying_at']
+        model = Queen
+        fields = ['yard','colony', 'queen_no', 'queen_color', 'cell_install_at','birth_at','laying_at']
 
-       widgets = {
-           'cell_install_at': DateInput(),
-           'birth_at': DateInput(),
-           'laying_at': DateInput()
+        widgets = {
+            'cell_install_at': DateInput(),
+            'birth_at': DateInput(),
+            'laying_at': DateInput()
+        }
 
-       }
+
 
 
 

@@ -149,6 +149,16 @@ import dj_database_url
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
+#DATABASES = {
+#    'default' : dj_database_url.config(default=config('DATABASE_URL'))
+#}
 DATABASES = {
-    'default' : dj_database_url.config(default=config('DATABASE_URL'))
+  'default': {
+    'ENGINE': 'django.db.backends.postgresql_psycopg2', # also tried: django.db.backends.postgresql
+    'NAME': 'colonymgr',
+    'USER': 'u_colonymgrs',
+    'PASSWORD': 'Ellenis1',
+    'HOST': 'localhost',
+    'PORT': '5432',
+   }
 }

@@ -30,6 +30,7 @@ urlpatterns = [
     path('queens/<int:pk>/', colonymgr_views.queens, name='queens'),
     path('colony_logs/<int:pk>/', colonymgr_views.colony_logs, name='colony_logs'),
     path('display_colony_log/<int:pk>/', colonymgr_views.display_colony_log, name='display_colony_log'),
+
     path('queen_logs/<int:pk>/', colonymgr_views.queen_logs, name='queen_logs'),
 
     path('yards/new/', colonymgr_views.new_yard, name='new_yard'),
@@ -40,7 +41,9 @@ urlpatterns = [
 
     path('yards/<int:yard_pk>/edit/',colonymgr_views.YardUpdateView.as_view(), name='edit_yard'),
     path('colonies/<int:colony_pk>/edit/', colonymgr_views.ColonyUpdateView.as_view(), name='edit_colony'),
+    path('colony_logs/<int:colony_log_pk>/edit/', colonymgr_views.Colony_logUpdateView.as_view(), name='edit_colony_log'),
     path('queens/<int:queen_pk>/edit/', colonymgr_views.QueenUpdateView.as_view(), name='edit_queen'),
+    path('ajax/load-colonies/', colonymgr_views.load_colonies, name='ajax_load_colonies'),
 
     path('reset/',auth_views.PasswordResetView.as_view(
         template_name='password_reset.html',

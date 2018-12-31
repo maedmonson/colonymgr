@@ -1,0 +1,4 @@
+<option value="">---------</option>
+{% for colony in colonies %}
+<option value="{{ colony.pk }}">{{ colony.location }}</option>
+{% endfor %}
