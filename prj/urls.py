@@ -25,7 +25,6 @@ urlpatterns = [
     path('signup/', accounts_views.signup, name='signup'),
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
-    path('', colonymgr_views.home, name='home' ),
     path('colonies/<int:home_pk>/', colonymgr_views.colonies, name='colonies'),
     path('queens/<int:pk>/', colonymgr_views.queens, name='queens'),
     path('colony_logs/<int:pk>/', colonymgr_views.colony_logs, name='colony_logs'),
@@ -33,7 +32,10 @@ urlpatterns = [
 
     path('queen_logs/<int:pk>/', colonymgr_views.queen_logs, name='queen_logs'),
 
+    path('', colonymgr_views.home, name='home'),
     path('yards/new/', colonymgr_views.new_yard, name='new_yard'),
+    path('yards/<int:yard_pk>/delete/', colonymgr_views.YardDeleteView.as_view(), name='delete_yard'),
+
     path('colonies/new/<int:yard_pk>/', colonymgr_views.new_colony, name='new_colony'),
     path('colony_logs/new/<int:pk>/', colonymgr_views.new_colony_log, name='new_colony_log'),
     path('queens/new/<int:colony_pk>/', colonymgr_views.new_queen, name='new_queen'),

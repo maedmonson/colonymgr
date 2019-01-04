@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import NewYardForm
+from .forms import DeleteYardForm
 from .forms import NewColonyForm
 from .forms import ColonyForm
 from .forms import NewQueenForm
@@ -26,7 +27,7 @@ from django.contrib import messages
 @login_required
 def home(request):
     #yards = Yard.objects.filter(created_by_id=self.request.us)
-    yards = Yard.objects.all()
+    yards = Yard.objects.all().order_by('name')
     return render(request, 'home.html', {'yards' : yards})
 
 def colonies(request, home_pk):
@@ -204,6 +205,39 @@ class YardUpdateView(UpdateView):
         post.updated_by = self.request.user
         post.save()
         return redirect('home')
+
+
+class YardDeleteView(UpdateView):
+    model = Yard
+    form_class = DeleteYardForm
+    template_name = 'delete_yard.html'
+    pk_url_kwarg = 'yard_pk'
+    context_object_name = 'yard'
+
+    def get_context_data(self, **kwargs):
+        context = super(YardDeleteView, self).get_context_data(**kwargs)
+
+        yard = Yard.objects.get(pk = self.kwargs['yard_pk'])
+
+        context['yard'] =  yard
+
+        return context
+
+
+    def form_valid(self, form):
+
+        yard = form.cleaned_data.get('yard')
+
+        post = form.save(commit=False)
+        post.delete()
+        return redirect('home')
+
+    def get_form_kwargs(self):
+        kwargs = super(YardDeleteView, self).get_form_kwargs()
+        kwargs['yard_pk'] = self.kwargs['yard_pk']
+        return kwargs
+
+
 
 class ColonyUpdateView(UpdateView):
     model = Colony

@@ -16,6 +16,32 @@ class NewYardForm(forms.ModelForm):
        model = Yard
        fields = ['name', 'description','phone']
 
+class DeleteYardForm(forms.ModelForm):
+
+
+    def __init__(self, *args, **kwargs):
+
+        print('---- __init___DeleteYardForm')
+
+        yard_pk = kwargs.pop('yard_pk')
+
+        print(yard_pk)
+
+        super(DeleteYardForm, self).__init__(*args, **kwargs)
+
+        yard = Yard.objects.get(pk=yard_pk)
+
+
+    class Meta:
+       model = Yard
+       fields = ['name', 'description', 'phone']
+
+       widgets = {
+
+       }
+
+
+
 
 class DateInput(forms.DateInput):
     input_type = 'date'
