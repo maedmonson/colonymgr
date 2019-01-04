@@ -6,6 +6,7 @@ from .forms import NewColonyForm
 from .forms import ColonyForm
 from .forms import NewQueenForm
 from .forms import EditQueenForm
+from .forms import DeleteQueenForm
 from .forms import Queen_logForm
 from .forms import Colony_logForm
 from .forms import Display_Colony_logForm
@@ -15,6 +16,7 @@ from .models import Colony_log
 from .models import Queen
 from .models import Queen_log
 from django.views.generic import UpdateView
+from django.views.generic import DeleteView
 
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -29,7 +31,7 @@ def home(request):
 
 def colonies(request, home_pk):
     yard = Yard.objects.get(pk= home_pk)
-    colonies = Colony.objects.filter(yard = yard)
+    colonies = Colony.objects.filter(yard = yard).order_by('location')
     return render(request, 'colonies.html', {'yard':yard, 'colonies': colonies})
 
 def queens(request, pk):
@@ -146,6 +148,43 @@ def new_queen(request, colony_pk):
     return render(request, 'new_queen.html',{'form' : form, 'yard': yard, 'colony': colony })
 
 
+def delete_queen(request, queen_pk):
+
+    queen = Queen.objects.get(pk=queen_pk)
+    colony = Colony.objects.get(pk = queen.colony.pk)
+    yard = Yard.objects.get(pk = colony.yard.pk)
+
+    if request.method == 'POST':
+        form = DeleteQueenForm(request.POST)
+
+
+        if form.is_valid():
+            queen.delete()
+
+            return redirect('queens', colony.pk)
+        else:
+            print(form.errors)
+    else:
+
+        print('--------')
+        print(queen_pk)
+
+        context = {
+
+            'queen' : queen,
+            'colony' : colony,
+            'yard' : yard
+
+
+        }
+
+        form = DeleteQueenForm()
+
+
+    return render(request, 'delete_queen.html',{'form' : form, 'queen': queen, 'colony' : colony, 'yard': yard  }, context)
+
+
+
 def load_colonies(request):
     pk = request.GET.get('pk')
     colonies = Colony.objects.filter(pk = pk)
@@ -249,6 +288,39 @@ class QueenUpdateView(UpdateView):
         kwargs = super(QueenUpdateView, self).get_form_kwargs()
         kwargs['queen_pk'] = self.kwargs['queen_pk']
         return kwargs
+
+
+class QueenDeleteView(UpdateView):
+    model = Queen
+    form_class = DeleteQueenForm
+    template_name = 'delete_queen.html'
+    pk_url_kwarg = 'queen_pk'
+    context_object_name = 'queen'
+
+    def get_context_data(self, **kwargs):
+        context = super(QueenDeleteView, self).get_context_data(**kwargs)
+
+        queen = Queen.objects.get(pk = self.kwargs['queen_pk'])
+
+        context['yard'] =  queen.colony.yard
+        context['colony'] = queen.colony
+        return context
+
+
+    def form_valid(self, form):
+
+        colony = form.cleaned_data.get('colony')
+
+        post = form.save(commit=False)
+        post.delete()
+        return redirect('queens', pk=colony.pk)
+
+    def get_form_kwargs(self):
+        kwargs = super(QueenDeleteView, self).get_form_kwargs()
+        kwargs['queen_pk'] = self.kwargs['queen_pk']
+        return kwargs
+
+
 
 class Queen_UpdateYard(UpdateView):
     model = Queen

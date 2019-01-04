@@ -43,6 +43,7 @@ urlpatterns = [
     path('colonies/<int:colony_pk>/edit/', colonymgr_views.ColonyUpdateView.as_view(), name='edit_colony'),
     path('colony_logs/<int:colony_log_pk>/edit/', colonymgr_views.Colony_logUpdateView.as_view(), name='edit_colony_log'),
     path('queens/<int:queen_pk>/edit/', colonymgr_views.QueenUpdateView.as_view(), name='edit_queen'),
+    path('queens/<int:queen_pk>/delete/', colonymgr_views.QueenDeleteView.as_view(), name='delete_queen'),
     path('ajax/load-colonies/', colonymgr_views.load_colonies, name='ajax_load_colonies'),
 
     path('reset/',auth_views.PasswordResetView.as_view(

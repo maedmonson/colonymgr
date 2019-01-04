@@ -28,7 +28,7 @@ class Queen(models.Model):
     created_by = models.ForeignKey(User, related_name='queens', on_delete=models.PROTECT)
     yard = models.ForeignKey(Yard, related_name='queens', default=None, on_delete=models.PROTECT)
     colony = models.ForeignKey(Colony, related_name='queens',on_delete=models.PROTECT)
-    queen_no = models.CharField(max_length=10, unique=True)
+    queen_no = models.CharField(max_length=10)
     queen_color = models.CharField(max_length=10)
     cell_install_at = models.DateTimeField(null=True ,blank=True)
     birth_at = models.DateTimeField(null=True ,blank=True)
@@ -36,6 +36,10 @@ class Queen(models.Model):
 
     def __str__(self):
         return self.queen_color + ' ' + self.queen_no
+
+    class Meta:
+        unique_together = ('queen_no', 'queen_color')
+
 
 class Colony_log(models.Model):
     colony = models.ForeignKey(Colony, related_name='colony_logs',on_delete=models.PROTECT)
